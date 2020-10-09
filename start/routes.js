@@ -41,3 +41,10 @@ Route.post('uploadMultiple', 'FileController.uploadMultiple');
 Route.get('download/:fileName', 'FileController.download');
 
 Route.post('addImage', 'ImageController.store')
+
+
+Route.post("register", "AuthController.register").prefix("/api/v1");
+Route.post("login", "AuthController.login").prefix("/api/v1");
+
+//Route.get('login/facebook', 'LoginController.redirect')
+//Route.get('facebook/callback', 'LoginController.callback')
