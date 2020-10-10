@@ -18,6 +18,14 @@ class Product extends Model {
 		return this.hasMany('App/Models/Image');
 	}
 
+	cart() {
+		return this.hasMany('App/Models/Cart')
+	}
+
+	orderitems() {
+		return this.belongsToMany('App/Models/OrderItem')
+	}
+
 }
 
 module.exports = Product

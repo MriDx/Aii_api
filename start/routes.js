@@ -45,6 +45,18 @@ Route.post('addImage', 'ImageController.store')
 
 Route.post("register", "AuthController.register").prefix("/api/v1");
 Route.post("login", "AuthController.login").prefix("/api/v1");
+Route.get("me", "AuthController.me").prefix("/api/v1");
 
 //Route.get('login/facebook', 'LoginController.redirect')
 //Route.get('facebook/callback', 'LoginController.callback')
+
+
+Route.post('address', 'AddressController.store').middleware('auth')
+
+Route.post('addToCart', 'CartController.add')
+
+Route.get('cartItems', 'CartController.cartItems')
+
+Route.post('order', 'OrderController.store').middleware('auth')
+
+Route.get('orders', 'OrderController.index').middleware('auth')

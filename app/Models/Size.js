@@ -9,6 +9,9 @@ class Size extends Model {
 		return this.hasMany('App/Models/Product');
 	}
 
+	orderitem() {
+		return this.belongsToMany('App/Models/OrderItem')
+	}
 }
 
 module.exports = Size

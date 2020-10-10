@@ -38,6 +38,25 @@ class AuthController {
 		}
 	}
 
+	async me({request, auth, response}) {
+		try {
+			const user = await auth.getUser()
+			const userdata = await User.query().where('id', user.id)
+			.with('cart')
+			.with('addresses')
+			.with('orders', function(builder) {
+				builder.with('orderitems')
+			})
+			.fetch()
+			return userdata
+		} catch (error) {
+			return response.status(403).json({
+				status: 'failed',
+				error
+			})
+		}
+	}
+
 }
 
 module.exports = AuthController
