@@ -29,8 +29,13 @@ class ProductController {
       .with('stock', function(builder) {
         builder.with('size')
       })
+      .with('category')
       .fetch();
-      return products;
+      return response.json({
+        data: {
+          products: products
+        }
+      });
     } catch (error) {
       return response.json({
         status: 'Failed',

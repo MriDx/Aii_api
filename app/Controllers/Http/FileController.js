@@ -5,30 +5,29 @@ const Drive = use('Drive');
 
 class FileController {
 
-	async upload ({ request }) {
-
-
-
+	async upload ({ request, response }) {
 
         const validationOptions = {
             types: ['image'],
             size: '1mb',
 		};
 
-
-
         const imageFile = request.file('image', validationOptions);
 
+        //return imageFile
 
-        await imageFile.move(Helpers.tmpPath('uploads'), {
-            name: 'myImage.jpg',
+        await imageFile.move(Helpers.tmpPath('tmp_uploads'), {
+            name: `${new Date().getTime()}.${imageFile.subtype}`,
             overwrite: true,
         });
 
         if (!imageFile.moved()) {
             return imageFile.error();
         }
-        return 'File uploaded';
+        return response.json({
+            status: 'success',
+            fileName : imageFile.fileName
+        })
 	}
 
 	async uploadMultiple ({ request }) {
@@ -62,13 +61,20 @@ class FileController {
 	}
 
 	async download ({ params, response }) {
-        const filePath = `uploads/${params.fileName}`;
+        const filePath = `tmp_uploads/${params.fileName}`;
         const isExist = await Drive.exists(filePath);
 
         if (isExist) {
             return response.download(Helpers.tmpPath(filePath));
         }
         return 'File does not exist';
+    }
+
+    async file({params : {dir, file}, response}) {
+        if (await Drive.exists(Helpers.publicPath(`${dir}/${file}`))) {
+            return response.download(Helpers.publicPath(`${dir}/${file}`))
+        }
+        return 'File does not exist'
     }
 
 }

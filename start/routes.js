@@ -26,7 +26,9 @@ Route.post('size', 'SizeController.store')
 
 Route.post('addStock', 'StockController.store')
 
-Route.get('products', 'ProductController.index')
+Route.get('list', 'ProductController.index')
+
+Route.get('products', 'ProductController.index').prefix('/api/v1')
 
 Route.get('product/:id', 'StockController.show')
 
@@ -41,6 +43,10 @@ Route.post('uploadMultiple', 'FileController.uploadMultiple');
 Route.get('download/:fileName', 'FileController.download');
 
 Route.post('addImage', 'ImageController.store')
+
+Route.group(() => {
+  Route.get('content/:dir/:file', 'FileController.file')
+})
 
 
 Route.post("register", "AuthController.register").prefix("/api/v1");
@@ -60,3 +66,12 @@ Route.get('cartItems', 'CartController.cartItems')
 Route.post('order', 'OrderController.store').middleware('auth')
 
 Route.get('orders', 'OrderController.index').middleware('auth')
+
+Route.group(function() {
+  Route.post('category/add', 'CategoryController.store').middleware('auth')
+  Route.get('categories', 'CategoryController.index')
+  Route.post('category/:id', 'CategoryController.update')
+}).prefix('api/v1/')
+
+Route.get('home', 'HomeController.index').middleware('auth').prefix('api/v1')
+
