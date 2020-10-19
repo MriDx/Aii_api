@@ -1,23 +1,18 @@
 'use strict'
 
-const { query } = require('../../Models/User')
-
-//const OrderItem = require('../../Models/OrderItem')
-
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-const OrderItem = use('App/Models/OrderItem')
-const Cart = use('App/Models/Cart')
+const Featured = use('App/Models/Featured')
 
 /**
- * Resourceful controller for interacting with orders
+ * Resourceful controller for interacting with featureds
  */
-class OrderController {
+class FeaturedController {
   /**
-   * Show a list of all orders.
-   * GET orders
+   * Show a list of all featureds.
+   * GET featureds
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -25,21 +20,23 @@ class OrderController {
    * @param {View} ctx.view
    */
   async index ({ request, auth, response, view }) {
+
     try {
-      const user = await auth.getUser()
-      const data = await user.with('orders')
-      return data
+      await auth.getUser()
+      const featured = await Featured.query().with('product').fetch()
+      return featured
     } catch (error) {
-      return response.status('404').json({
+      return response.status(403).json({
         status: 'failed',
         error
       })
     }
+
   }
 
   /**
-   * Render a form to be used for creating a new order.
-   * GET orders/create
+   * Render a form to be used for creating a new featured.
+   * GET featureds/create
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -50,8 +47,8 @@ class OrderController {
   }
 
   /**
-   * Create/save a new order.
-   * POST orders
+   * Create/save a new featured.
+   * POST featureds
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -59,40 +56,22 @@ class OrderController {
    */
   async store ({ request, auth, response }) {
 
-    let {address_id, payment_mode, payment_status, items} = request.all()
     try {
-      const user = await auth.getUser()
-
-      //return user
-
-      const order = await user.orders().create({
-        'address_id': address_id,
-        'payment_mode':payment_mode,
-        'payment_status':payment_status,
-        'status_id': 2
-      })
-
-      let orders = await order.orderitems().createMany(items)
-      await Cart.query().where('user_id', user.id).delete()
-      //return orders
-
-      //let o = await OrtherItem.query().where('order_item', order.id).with('product').with('size').fetch()
-
-      let d = {items: orders}
-
-      return response.json({
-        status: 'success',
-        data: Object.assign(order, d)
-      })
+      await auth.getUser()
+      const featured = await Featured.create(request.all())
+      return featured
     } catch (error) {
-      return response.status(403).json({status: 'failed', error})
+      return response.status(403).json({
+        status: 'failed',
+        error
+      })
     }
 
   }
 
   /**
-   * Display a single order
-   * GET orders/:id
+   * Display a single featured.
+   * GET featureds/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -103,8 +82,8 @@ class OrderController {
   }
 
   /**
-   * Render a form to update an existing order.
-   * GET orders/:id/edit
+   * Render a form to update an existing featured.
+   * GET featureds/:id/edit
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -115,8 +94,8 @@ class OrderController {
   }
 
   /**
-   * Update order details.
-   * PUT or PATCH orders/:id
+   * Update featured details.
+   * PUT or PATCH featureds/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -126,8 +105,8 @@ class OrderController {
   }
 
   /**
-   * Delete a order with id.
-   * DELETE orders/:id
+   * Delete a featured with id.
+   * DELETE featureds/:id
    *
    * @param {object} ctx
    * @param {Request} ctx.request
@@ -137,4 +116,4 @@ class OrderController {
   }
 }
 
-module.exports = OrderController
+module.exports = FeaturedController

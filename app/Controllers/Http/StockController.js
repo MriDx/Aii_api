@@ -64,7 +64,7 @@ class StockController {
    */
   async store ({ request, response }) {
     try {
-      const m = await Stock.findBy({product_id: request.body.product_id, size_id: request.body.size_id});
+      const m = await Stock.findBy({product_id: request.body.product_id, size_id: request.body.size_id})
       if (m == null) {
         m = await Stock.create(request.all())
       }

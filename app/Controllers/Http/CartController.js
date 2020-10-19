@@ -95,19 +95,24 @@ class CartController {
 
 
   async add({request, auth, response}) {
-    let {product_id, qty} = request.all()
+    let {product_id, qty, size_id} = request.all()
     try {
       const user = await auth.getUser()
-      let m = await Cart.query().where('user_id', user.id).where('product_id', product_id).first();
+      let m = await Cart.query().where('user_id', user.id).where({'product_id': product_id, 'size_id': size_id}).first()
       if (m == null) {
         m = await user.cart().create(request.all());
-      } else {
+        return response.json({
+          status: 'success',
+          cartItem : m,
+          code: "DI"
+        })
+      } /* else {
         m = await Cart.query().where({'user_id': user.id, 'product_id': product_id})
         .update({'qty': qty})
-      }
+      } */
       return response.json({
         status: 'success',
-        m
+        code: 'DE'
       })
     } catch (error) {
       return response.status(403).json({
@@ -121,7 +126,9 @@ class CartController {
     try {
       const user = await auth.getUser()
       let items = await user.cart()
-      .with('product')
+      .with('product', (b) => {
+        b.with('image')
+      })
       .with('stock', function(builder) {
         builder.with('size')
       })
@@ -129,6 +136,31 @@ class CartController {
       return items
     } catch (error) {
       return error
+    }
+  }
+
+  async removeCart({params: {itemId}, request, auth, response}) {
+    try {
+      const user = await auth.getUser()
+      let rows = await user.cart().where('id', itemId).delete()
+      let items = await user.cart()
+      .with('product', (b) => {
+        b.with('image')
+      })
+      .with('stock', function(builder) {
+        builder.with('size')
+      })
+      .fetch()
+      return response.json({
+        status: 'success',
+        rows_deleted: rows,
+        items : items
+      })
+    } catch (error) {
+      return response.status(403).json({
+        status: failed,
+        error
+      })
     }
   }
 

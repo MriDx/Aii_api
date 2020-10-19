@@ -4,7 +4,9 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-const Product = use('App/Models/Product');
+const Product = use('App/Models/Product')
+const Helpers = use('Helpers')
+const Drive = use('Drive')
 
 /**
  * Resourceful controller for interacting with products
@@ -126,6 +128,33 @@ class ProductController {
    */
   async destroy ({ params, request, response }) {
   }
+
+  async bycategory ({ params: {id}, request, response}) {
+    //return 'hello'
+    try {
+      //return "hello"
+      //const user = await auth.getUser()
+      let items = await Product.query().where('category_id', id)
+      .where('stock', '1')
+      .with('image', function(builder) {
+        builder.select('images.id', 'images.product_id', 'images.url')
+      })
+      .with('stock', function(builder) {
+        builder.with('size')
+      })
+      .fetch()
+      return response.json({
+        status: 'success',
+        items: items
+      })
+    } catch (error) {
+      return response.status(403).json({
+        status: 'failed',
+        error
+      })
+    }
+  }
+
 }
 
 module.exports = ProductController

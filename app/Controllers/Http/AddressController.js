@@ -19,7 +19,15 @@ class AddressController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index ({ request, auth, response, view }) {
+    try {
+      const user = await auth.getUser()
+      let add = await user.addresses().fetch()
+      return add
+    } catch (error) {
+      return response.status(403).json({status: 'failed', error})
+    }
+
   }
 
   /**

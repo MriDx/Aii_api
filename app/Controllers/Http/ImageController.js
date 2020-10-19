@@ -4,7 +4,9 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-const Image = use('App/Models/Image');
+const Image = use('App/Models/Image')
+const Helpers = use('Helpers')
+const Drive = use('Drive')
 
 /**
  * Resourceful controller for interacting with images
@@ -42,13 +44,31 @@ class ImageController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
-
+  async store ({ request, auth, response }) {
+    let product_id = request.body.product_id
     try {
-      const img = await Image.create(request.all())
-      return img
+      await auth.getUser()
+      const validationOptions = {
+        types: ['image'],
+        size: '1mb',
+      }
+      const imageFile = request.file('image', validationOptions)
+      await imageFile.move(Helpers.publicPath('product'), {
+        name: `${product_id}_${new Date().getTime()}.${imageFile.subtype}`,
+        overwrite: true,
+      })
+      if (!imageFile.moved()) {
+        return imageFile.error();
+      }
+      const img = await Image.create({product_id: product_id, url: `product/${imageFile.fileName}`})
+      return response.json({
+        status: 'success',
+        img
+      })
     } catch (error) {
-      return error
+      return response.status(403).json({
+        status: 'failed'
+      })
     }
 
   }

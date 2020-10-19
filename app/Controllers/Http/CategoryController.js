@@ -113,7 +113,10 @@ class CategoryController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show ({ params :{id}, request, response, view }) {
+
+    return id
+
   }
 
   /**
@@ -182,6 +185,7 @@ class CategoryController {
    */
   async destroy ({ params, request, response }) {
   }
+
 }
 
 module.exports = CategoryController

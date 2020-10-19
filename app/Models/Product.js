@@ -30,6 +30,10 @@ class Product extends Model {
 		return this.belongsTo('App/Models/Category')
 	}
 
+	featured() {
+		return this.belongsTo('App/Models/Featured')
+	}
+
 }
 
 module.exports = Product
