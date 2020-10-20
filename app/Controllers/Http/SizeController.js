@@ -43,9 +43,8 @@ class SizeController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
-
     try {
-      const size = Size.create(request.all());
+      const size = await Size.create(request.all());
       return response.json({
         status: 'success',
         size

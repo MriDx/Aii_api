@@ -17,6 +17,7 @@ class AddressSchema extends Schema {
       table.string('name').notNullable()
       table.string('phone', 10).notNullable()
       table.string('alt_phone', 10)
+      table.foreign('user_id').references('users.id').onDelete('cascade')
       table.timestamps()
     })
   }

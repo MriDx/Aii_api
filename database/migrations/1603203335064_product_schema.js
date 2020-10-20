@@ -5,17 +5,20 @@ const Schema = use('Schema')
 
 class ProductSchema extends Schema {
   up () {
-    this.table('products', (table) => {
-      // alter table
+    this.create('products', (table) => {
+      table.increments()
+      table.string('name').notNullable()
+      table.string('color')
+      table.string('stock')
       table.integer('category_id').unsigned()
       table.foreign('category_id').references('categories.id')
+      table.string("brand_name")
+      table.timestamps()
     })
   }
 
   down () {
-    this.table('products', (table) => {
-      // reverse alternations
-    })
+    this.drop('products')
   }
 }
 

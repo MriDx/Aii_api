@@ -155,6 +155,25 @@ class ProductController {
     }
   }
 
+  async search({request, params: {query},auth, response}) {
+    try {
+      let products = await Product.query()
+      .where('name', 'LIKE', '%'+query+'%')
+      .where('stock', '1')
+      .with('image', function(builder) {
+        builder.select('images.id', 'images.product_id', 'images.url')
+      })
+      .with('stock', function(builder) {
+        builder.with('size')
+      })
+      .with('category')
+      .fetch()
+      return products
+    } catch (error) {
+
+    }
+  }
+
 }
 
 module.exports = ProductController

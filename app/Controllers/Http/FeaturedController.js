@@ -5,6 +5,8 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 const Featured = use('App/Models/Featured')
+const Helpers = use('Helpers')
+const Drive = use('Drive')
 
 /**
  * Resourceful controller for interacting with featureds
@@ -55,11 +57,24 @@ class FeaturedController {
    * @param {Response} ctx.response
    */
   async store ({ request, auth, response }) {
-
     try {
-      await auth.getUser()
-      const featured = await Featured.create(request.all())
-      return featured
+      let {product_id, image} = request.all()
+      const user = await auth.getUser()
+      const imageFile = `tmp_uploads/${image}`
+      const isExist = await Drive.exists(imageFile)
+      const dest = `banner/${product_id}_${new Date().getTime()}.png`
+      if (isExist) {
+        if (await Drive.exists(Helpers.publicPath(dest))) {
+           await Drive.delete(Helpers.publicPath(dest))
+        }
+        let f = await Drive.move(imageFile, Helpers.publicPath(dest))
+
+        const featured = await Featured.create({
+          product_id: product_id,
+          banner: dest
+        })
+        return featured
+      }
     } catch (error) {
       return response.status(403).json({
         status: 'failed',

@@ -4,8 +4,8 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-const Stock = use('App/Models/Stock');
-const Product = use('App/Models/Product');
+const Stock = use('App/Models/Stock')
+const Product = use('App/Models/Product')
 
 /**
  * Resourceful controller for interacting with stocks
@@ -23,7 +23,7 @@ class StockController {
   async index ({ request, response }) {
 
     try {
-      const stock = Stock.query()
+      const stock = await Stock.query()
       //.select('product_id')
       //.groupBy('product_id')
       .with('product', function(builder) {
@@ -64,18 +64,23 @@ class StockController {
    */
   async store ({ request, response }) {
     try {
-      const m = await Stock.findBy({product_id: request.body.product_id, size_id: request.body.size_id})
+      let m = await Stock.findBy({product_id: request.body.product_id, size_id: request.body.size_id})
       if (m == null) {
         m = await Stock.create(request.all())
       }
-      if (m.stock > 0) {
-        await Product.query().where('id', m.product_id).update({'stock': true});
+      let r
+      if (await m.stock > 0) {
+        r = await Product.query().where('id', m.product_id).update({'stock': true});
       } else {
-        await Product.query().where('id', m.product_id).update({'stock': false});
+        r = await Product.query().where('id', m.product_id).update({'stock': false});
       }
-      return m;
-    } catch (error) {
       return response.json({
+        status: 'success',
+        stock: m,
+        affected: r
+      })
+    } catch (error) {
+      return response.status(403).json({
         status: 'failed',
         error
       })

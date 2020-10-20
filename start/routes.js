@@ -20,12 +20,13 @@ Route.get('/', () => {
   return { greeting: 'Hello world in JSON' }
 })
 
-Route.post('create', 'ProductController.store')
 
 Route.post('size', 'SizeController.store')
 
 
 Route.group(() => {
+
+  Route.post('add/product', 'ProductController.store')
 
   Route.get('products', 'ProductController.index')
 
@@ -36,8 +37,6 @@ Route.group(() => {
   Route.post('addStock', 'StockController.store')
 
   Route.post('product/addImage', 'ImageController.store')
-
-
 
 }).prefix('api/v1/')
 
@@ -56,6 +55,7 @@ Route.group(() => {
   Route.get('content/:dir/:file', 'FileController.file')
 })
 
+
 Route.group(function(){
   Route.post('addToCart', 'CartController.add')
   Route.get('cartItems', 'CartController.cartItems')
@@ -64,7 +64,7 @@ Route.group(function(){
   Route.get('orders', 'OrderController.index')
   Route.post('address', 'AddressController.store')
   Route.get('addresses', 'AddressController.index')
-
+  Route.get('search/:query', 'ProductController.search')
 }).middleware('auth').prefix('api/v1/')
 
 

@@ -69,7 +69,7 @@ class OrderController {
         'address_id': address_id,
         'payment_mode':payment_mode,
         'payment_status':payment_status,
-        'status_id': 2
+        'status_id': 1
       })
 
       let orders = await order.orderitems().createMany(items)
