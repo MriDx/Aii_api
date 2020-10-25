@@ -12,6 +12,8 @@ class OrderSchema extends Schema {
       table.string('payment_mode').notNullable()
       table.string('payment_status').notNullable()
       table.integer('status_id').unsigned()
+      table.string('status')
+      table.float('amount').notNullable()
       table.foreign('user_id').references('users.id').onDelete('cascade')
       table.foreign('address_id').references('addresses.id').onDelete('cascade')
       table.foreign('status_id').references('order_statuses.id').onDelete('cascade')

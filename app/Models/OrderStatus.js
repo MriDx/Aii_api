@@ -5,9 +5,9 @@ const Model = use('Model')
 
 class OrderStatus extends Model {
 
-	orders() {
+	/* orders() {
 		return this.belongsToMany('App/Models/Order')
-	}
+	} */
 
 }
 

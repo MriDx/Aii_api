@@ -14,7 +14,17 @@ class HomeController {
 	async index({request, auth, response}) {
 		try {
 			const user = await auth.getUser()
-			const featured = await Featured.query().fetch()
+			const featured = await Featured.query()
+			.with('product', function(builder) {
+				builder.with('image', function(builder) {
+					builder.select('images.id', 'images.product_id', 'images.url')
+				})
+				.with('stock', function(builder) {
+					builder.with('size')
+				})
+				.with('category')
+			})
+			.fetch()
 			let category = await Category.query().withCount('products').fetch()
 			const products = await Product.query()
 				.where('stock', '1')

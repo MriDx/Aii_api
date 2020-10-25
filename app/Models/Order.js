@@ -18,11 +18,11 @@ class Order extends Model {
 	}
 
 	address() {
-		return this.hasOne('App/Models/Address')
+		return this.belongsTo('App/Models/Address')
 	}
 
 	status() {
-		return this.hasOne('App/Models/OrderStatus')
+		return this.belongsTo('App/Models/OrderStatus')
 	}
 
 	orderitems() {

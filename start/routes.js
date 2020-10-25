@@ -24,6 +24,7 @@ Route.get('/', () => {
 Route.post('size', 'SizeController.store')
 
 
+//Products
 Route.group(() => {
 
   Route.post('add/product', 'ProductController.store')
@@ -61,17 +62,23 @@ Route.group(function(){
   Route.get('cartItems', 'CartController.cartItems')
   Route.get('cart/remove/:itemId', 'CartController.removeCart')
   Route.post('order', 'OrderController.store')
-  Route.get('orders', 'OrderController.index')
+  //Route.get('orders', 'OrderController.index')
   Route.post('address', 'AddressController.store')
   Route.get('addresses', 'AddressController.index')
   Route.get('search/:query', 'ProductController.search')
+  Route.get('orders', 'OrderController.orders')
+  Route.get('order/:id', 'OrderController.orderData')
 }).middleware('auth').prefix('api/v1/')
 
 
+Route.group(() => {
+  Route.post("register", "AuthController.register")
+  Route.post("login", "AuthController.login")
+  Route.get("me", "AuthController.me")
+  Route.get('logout', 'AuthController.logout')
+}).middleware('auth').prefix("/api/v1")
 
-Route.post("register", "AuthController.register").prefix("/api/v1");
-Route.post("login", "AuthController.login").prefix("/api/v1");
-Route.get("me", "AuthController.me").prefix("/api/v1");
+
 
 //Route.get('login/facebook', 'LoginController.redirect')
 //Route.get('facebook/callback', 'LoginController.callback')
