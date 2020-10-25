@@ -70,8 +70,8 @@ Route.group(function(){
   Route.get('order/:id', 'OrderController.orderData')
 }).middleware('auth').prefix('api/v1/')
 
-Route.post("register", "AuthController.register")
-Route.post("login", "AuthController.login")
+Route.post("register", "AuthController.register").prefix("/api/v1")
+Route.post("login", "AuthController.login").prefix("/api/v1")
 Route.group(() => {
   Route.get("me", "AuthController.me")
   Route.get('logout', 'AuthController.logout')
