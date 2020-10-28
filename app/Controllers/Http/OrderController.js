@@ -11,6 +11,10 @@ const { query } = require('../../Models/User')
 const OrderItem = use('App/Models/OrderItem')
 const Cart = use('App/Models/Cart')
 const Order = use('App/Models/Order')
+const Stock = use('App/Models/Stock')
+const Product = use('App/Models/Product')
+
+const Database = use('Database')
 
 /**
  * Resourceful controller for interacting with orders
@@ -59,12 +63,37 @@ class OrderController {
    * @param {Response} ctx.response
    */
   async store ({ request, auth, response }) {
-
     let {address_id, payment_mode, payment_status, amount, items} = request.all()
+    const trx = await Database.beginTransaction()
+    let message
     try {
       const user = await auth.getUser()
+      let x
 
-      //return user
+      for (let i = 0; i < items.length; i++) {
+        const element = items[i];
+        const stock = await Stock.findByOrFail({product_id: element.product_id, size_id: element.size_id})
+        x = stock
+        let s = stock.stock
+        if (s  == 0)  {
+          message = "One or more product is out of stock. Please go back to cart and remove out of stock products"
+          throw "One or more product is out of stock"
+        }
+        if (s == 1) {
+          //update product table
+          const stocks = await Stock.query(trx).where('product_id', element.product_id).fetch()
+          let pStk = 0
+          for (let j = 0; j < stocks.rows.length; j++) {
+            //const data =  stocks.rows[j]
+            pStk = stocks.rows[j].stock + pStk
+          }
+          if (pStk == 1) {
+            await Product.query(trx).where('id', element.product_id).update({'stock': 0})
+          }
+        }
+        stock.stock = s - 1
+        await stock.save(trx)
+      }
 
       const order = await user.orders().create({
         'address_id': address_id,
@@ -73,22 +102,25 @@ class OrderController {
         'status_id': 1,
         'status': 'Processing',
         'amount': amount
-      })
+      }, trx)
 
-      let orders = await order.orderitems().createMany(items)
-      await Cart.query().where('user_id', user.id).delete()
-      //return orders
+      let orders = await order.orderitems().createMany(items, trx)
+      await Cart.query(trx).where('user_id', user.id).delete()
 
-      //let o = await OrtherItem.query().where('order_item', order.id).with('product').with('size').fetch()
+      await trx.commit()
+
+      message = "Order Placed !"
 
       let d = {items: orders}
 
       return response.json({
         status: 'success',
+        message: message,
         data: Object.assign(order, d)
       })
     } catch (error) {
-      return response.status(403).json({status: 'failed', error})
+      await trx.rollback()
+      return response.status(403).json({status: 'failed',message: message, error})
     }
 
   }

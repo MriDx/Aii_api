@@ -31,7 +31,9 @@ Route.group(() => {
 
   Route.get('products', 'ProductController.index')
 
-  Route.get('product/:id', 'StockController.show')
+  //Route.get('product/:id', 'StockController.show')
+
+  Route.get('product/:id', 'ProductController.show')
 
   Route.get('product/:product_id/:size_id', 'StockController.checkStock')
 

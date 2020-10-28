@@ -121,7 +121,7 @@ class StockController {
     try {
       const product = await Stock.query()
       .where('product_id', id)
-      .fetch();
+      .fetch()
       return product;
     } catch (error) {
       return response.json({

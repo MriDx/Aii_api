@@ -6,6 +6,7 @@
 
 
 const Cart = use('App/Models/Cart')
+const Stock = use('App/Models/Stock')
 
 /**
  * Resourceful controller for interacting with carts
@@ -96,27 +97,35 @@ class CartController {
 
   async add({request, auth, response}) {
     let {product_id, qty, size_id} = request.all()
+    let message
     try {
       const user = await auth.getUser()
       let m = await Cart.query().where('user_id', user.id).where({'product_id': product_id, 'size_id': size_id}).first()
       if (m == null) {
-        m = await user.cart().create(request.all());
-        return response.json({
-          status: 'success',
-          cartItem : m,
-          code: "DI"
-        })
-      } /* else {
-        m = await Cart.query().where({'user_id': user.id, 'product_id': product_id})
-        .update({'qty': qty})
-      } */
+        let stock = await Stock.query().where({'product_id': product_id, 'size_id': size_id}).first()
+        if (stock != null && stock.stock > 0) {
+          m = await user.cart().create(request.all())
+          message = "Product added to cart !"
+          return response.json({
+            status: 'success',
+            cartItem : m,
+            code: "DI",
+            message: message
+          })
+        } else {
+          message = "Product is out-of-stock"
+          throw "Product is out of stock"
+        }
+      }
       return response.json({
         status: 'success',
-        code: 'DE'
+        code: 'DE',
+        message: message
       })
     } catch (error) {
       return response.status(403).json({
         status: 'failed',
+        message: message,
         error
       })
     }

@@ -92,7 +92,22 @@ class ProductController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show ({ params:{id}, request, response, view }) {
+    try {
+      //const user = await auth.getUser()
+      let product = await Product.query().where('id', id)
+      .with('stock', b => {
+        b.where('stock', '>', 0).with('size')
+      })
+      .with('image')
+      .first()
+      return product
+    } catch (error) {
+      return response.status(403).json({
+        status: 'failed',
+        error
+      })
+    }
   }
 
   /**
@@ -171,6 +186,23 @@ class ProductController {
       return products
     } catch (error) {
 
+    }
+  }
+
+  async showProduct({params: {id}, request, auth, response}) {
+    try {
+      const user = await auth.getUser()
+      let product = await Product.query().where('id', id)
+      .with('stock', b => {
+        b.where('stock', '>', 0)
+      })
+      .fetch()
+      return product
+    } catch (error) {
+      return response.status(403).json({
+        status: 'failed',
+        error
+      })
     }
   }
 
