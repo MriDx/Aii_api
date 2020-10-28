@@ -72,9 +72,10 @@ class CategoryController {
       }
       const imageFile = `tmp_uploads/${image}`
       const isExist = await Drive.exists(imageFile)
+      let imageName = name.replace(/\s/g, "")
       if (isExist) {
-      if (await Drive.exists(Helpers.publicPath(`category/${name}.png`))) await Drive.delete(Helpers.publicPath(`category/${name}.png`))
-      let f = await Drive.move(imageFile, Helpers.publicPath(`category/${name}.png`))
+      if (await Drive.exists(Helpers.publicPath(`category/${imageName}.png`))) await Drive.delete(Helpers.publicPath(`category/${imageName}.png`))
+      let f = await Drive.move(imageFile, Helpers.publicPath(`category/${imageName}.png`))
       if (!f) {
         return response.status(404).json({
           status: 'failed',
@@ -83,7 +84,7 @@ class CategoryController {
       }
       let category = await Category.create({
         name:name,
-        image: `category/${name}.png`
+        image: `category/${imageName}.png`
       })
       return response.json({
         status: 'created',
@@ -145,9 +146,10 @@ class CategoryController {
       await auth.getUser()
       const category = await Category.findByOrFail('id', id)
       const imageFile = `tmp_uploads/${image}`
-      const newImg = `category/${category.name}.png`
+      const imgName = category.name.replace(/\s/g, "")
+      const newImg = `category/${imgName}.png`
       if (await Drive.exists(Helpers.tmpPath(imageFile))) {
-        if (await Drive.exists(Helpers.publicPath(newImg))) await Drive.delete(Helpers.publicPath(newImg))
+        if (await Drive.exists(Helpers.publicPath(category.image))) await Drive.delete(Helpers.publicPath(category.image))
         let f = await Drive.move(imageFile, Helpers.publicPath(newImg))
         if (!f) {
           return response.status(404).json({
