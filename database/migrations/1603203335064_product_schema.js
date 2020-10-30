@@ -13,6 +13,7 @@ class ProductSchema extends Schema {
       table.integer('category_id').unsigned()
       table.foreign('category_id').references('categories.id')
       table.string("brand_name")
+      table.string('tags')
       table.timestamps()
     })
   }

@@ -34,6 +34,14 @@ class Product extends Model {
 		return this.belongsTo('App/Models/Featured')
 	}
 
+	reviews() {
+		return this.hasMany('App/Models/Review')
+	}
+
+	description() {
+		return this.hasOne('App/Models/ProductDescription')
+	}
+
 }
 
 module.exports = Product

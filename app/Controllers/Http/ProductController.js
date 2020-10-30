@@ -100,6 +100,10 @@ class ProductController {
         b.where('stock', '>', 0).with('size')
       })
       .with('image')
+      .with('description')
+      .with('reviews', b => {
+        b.limit(10)
+      })
       .first()
       return product
     } catch (error) {
@@ -204,6 +208,24 @@ class ProductController {
         error
       })
     }
+  }
+
+  async addDesc({request, params: {id}, auth, response}) {
+
+    try {
+      const product = await Product.findByOrFail('id', id)
+      let desc= await product.description().create(request.all())
+      return response.json({
+        status: 'success',
+        data: Object.assign(desc, product)
+      })
+    } catch (error) {
+      return response.status(403).json({
+        status: 'failed',
+        error
+      })
+    }
+
   }
 
 }

@@ -29,6 +29,8 @@ Route.group(() => {
 
   Route.post('add/product', 'ProductController.store')
 
+  Route.post('product/desc/:id', 'ProductController.addDesc')
+
   Route.get('products', 'ProductController.index')
 
   //Route.get('product/:id', 'StockController.show')
@@ -70,6 +72,8 @@ Route.group(function(){
   Route.get('search/:query', 'ProductController.search')
   Route.get('orders', 'OrderController.orders')
   Route.get('order/:id', 'OrderController.orderData')
+
+  Route.post('product/review', 'ReviewController.store')
 }).middleware('auth').prefix('api/v1/')
 
 Route.post("register", "AuthController.register").prefix("/api/v1")
@@ -108,4 +112,5 @@ Route.get('featured', 'FeaturedController.index').middleware('auth').prefix('api
 Route.post('featured/add', 'FeaturedController.store').middleware('auth').prefix('api/v1')
 
 Route.get('category/products/:id', 'ProductController.bycategory').prefix('api/v1')
+
 
