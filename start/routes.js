@@ -33,6 +33,8 @@ Route.group(() => {
 
   Route.get('products', 'ProductController.index')
 
+  Route.get('products/:page', 'ProductController.index')
+
   //Route.get('product/:id', 'StockController.show')
 
   Route.get('product/:id', 'ProductController.show')
@@ -42,6 +44,8 @@ Route.group(() => {
   Route.post('addStock', 'StockController.store')
 
   Route.post('product/addImage', 'ImageController.store')
+
+  Route.post('product/tag/:id', 'ProductController.addTags')
 
 }).prefix('api/v1/')
 
@@ -72,6 +76,8 @@ Route.group(function(){
   Route.get('search/:query', 'ProductController.search')
   Route.get('orders', 'OrderController.orders')
   Route.get('order/:id', 'OrderController.orderData')
+  Route.post('order/cancel/:id', 'OrderController.cancelOrder')
+  Route.post('order/return/:id', 'OrderController.orderReturn')
 
   Route.post('product/review', 'ReviewController.store')
 }).middleware('auth').prefix('api/v1/')
@@ -111,6 +117,13 @@ Route.get('home', 'HomeController.index').middleware('auth').prefix('api/v1')
 Route.get('featured', 'FeaturedController.index').middleware('auth').prefix('api/v1')
 Route.post('featured/add', 'FeaturedController.store').middleware('auth').prefix('api/v1')
 
-Route.get('category/products/:id', 'ProductController.bycategory').prefix('api/v1')
+Route.get('category/products/:id/:page', 'ProductController.bycategory').prefix('api/v1')
 
 
+Route.post('checksum/generate', 'PaytmController.checksum').prefix('api/v1/')
+Route.post('checksum/validate', 'PaytmController.validate').prefix('api/v1/')
+
+
+//add product to homepage
+Route.post('customize/home/product', 'HomeProductController.add').prefix('api/v1/')
+Route.post('customize/home/products', 'HomeProductController.addMultiple').prefix('api/v1/')

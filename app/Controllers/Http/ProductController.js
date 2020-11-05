@@ -21,7 +21,7 @@ class ProductController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response }) {
+  async index ({ request, params: {page}, response }) {
     try {
       const products = await Product.query()
       .where('stock', '1')
@@ -31,8 +31,9 @@ class ProductController {
       .with('stock', function(builder) {
         builder.with('size')
       })
-      .with('category')
-      .fetch();
+      .orderBy('id', 'desc')
+      .paginate(page, 10)
+      //.fetch()
       return response.json({
         data: {
           products: products
@@ -102,7 +103,7 @@ class ProductController {
       .with('image')
       .with('description')
       .with('reviews', b => {
-        b.limit(10)
+        b.orderBy('id', 'desc').limit(10)
       })
       .first()
       return product
@@ -148,7 +149,7 @@ class ProductController {
   async destroy ({ params, request, response }) {
   }
 
-  async bycategory ({ params: {id}, request, response}) {
+  async bycategory ({ params: {id, page}, request, response}) {
     //return 'hello'
     try {
       //return "hello"
@@ -161,10 +162,14 @@ class ProductController {
       .with('stock', function(builder) {
         builder.with('size')
       })
-      .fetch()
+      .orderBy('id', 'desc')
+      .paginate(page, 10)
+      //.fetch()
       return response.json({
         status: 'success',
-        items: items
+        data: {
+          products: items
+        }
       })
     } catch (error) {
       return response.status(403).json({
@@ -226,6 +231,22 @@ class ProductController {
       })
     }
 
+  }
+
+  async addTags({request, params:{id}, auth, response}) {
+    try {
+      let product = await Product.findByOrFail('id', id)
+      let tags = await product.tags().create(request.all())
+      return response.json({
+        status: 'success',
+        data : Object.assign(tags, product)
+      })
+    } catch (error) {
+      return response.status(403).json({
+        status: 'failed',
+        error
+      })
+    }
   }
 
 }

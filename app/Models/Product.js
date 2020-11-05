@@ -42,6 +42,12 @@ class Product extends Model {
 		return this.hasOne('App/Models/ProductDescription')
 	}
 
+	tags() {
+		return this.hasOne('App/Models/Tag')
+	}
+
+
+
 }
 
 module.exports = Product

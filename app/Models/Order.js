@@ -29,6 +29,14 @@ class Order extends Model {
 		return this.hasMany('App/Models/OrderItem')
 	}
 
+	cancel() {
+		return this.hasOne('App/Models/Cancel')
+	}
+
+	return() {
+		return this.hasOne('App/Models/Return')
+	}
+
 }
 
 module.exports = Order
