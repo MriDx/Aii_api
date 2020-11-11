@@ -101,7 +101,7 @@ class OrderController {
         'address_id': address_id,
         'payment_mode':payment_mode,
         'payment_status':payment_status,
-        'status_id': 1,
+        //'status_id': 1,
         'status': 'Processing',
         'order_uid':order_uid,
         'amount': amount
