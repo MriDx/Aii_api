@@ -127,3 +127,11 @@ Route.post('checksum/validate', 'PaytmController.validate').prefix('api/v1/')
 //add product to homepage
 Route.post('customize/home/product', 'HomeProductController.add').prefix('api/v1/')
 Route.post('customize/home/products', 'HomeProductController.addMultiple').prefix('api/v1/')
+
+
+Route.group('adminapp', () => {
+  Route.get('home', 'AdminController.home')
+  Route.get('products/:page', 'AdminController.products')
+  Route.get('products/:page/:limit', 'AdminController.productsC')
+  Route.get('orders/:page', 'AdminController.orders')
+}).prefix('admin/api/v1/')
